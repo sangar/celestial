@@ -27,7 +27,6 @@ module Celestial
         length: Time.at(duration).utc.strftime("%T"),
         difference: Time.at(duration - y_duration).utc.strftime("%M:%S"),
         noon: Time.at(noon).to_datetime,
-        distance: 0,
         civil: {
           sunrise: calculate(date, latitude, longitude, :sunrise, 96),
           sunset: calculate(date, latitude, longitude, :sunset, 96)
