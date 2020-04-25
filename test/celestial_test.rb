@@ -10,4 +10,10 @@ class CelestialTest < Minitest::Test
 
     assert_equal 8, data.count
   end
+
+  def test_cag_get_data_other_side
+    data = Celestial.for(latitude: -33.920326, longitude: 18.431069)
+
+    assert_equal 8, data.count
+  end
 end

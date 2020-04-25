@@ -21,11 +21,17 @@ module Celestial
 
       noon = sunrise.strftime('%s').to_i + (duration / 2)
 
+      if (y_duration > duration)
+        diff = Time.at(y_duration - duration).utc.strftime("-%M:%S")
+      else
+        diff = Time.at(duration - y_duration).utc.strftime("+%M:%S")
+      end
+
       {
         sunrise: sunrise,
         sunset: sunset,
         length: Time.at(duration).utc.strftime("%T"),
-        difference: Time.at(duration - y_duration).utc.strftime("%M:%S"),
+        difference: diff,
         noon: Time.at(noon).to_datetime,
         civil: {
           sunrise: calculate(date, latitude, longitude, :sunrise, 96),
