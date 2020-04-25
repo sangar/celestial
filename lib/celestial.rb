@@ -166,6 +166,7 @@ module Celestial
 
       # 7b. finish calculating H and convert into hours
       def finish_calculating_h_and_convert_into_hours(cos_h, rise_or_set)
+        cos_h = -1 if cos_h < -1
         acos_h = Math.acos(cos_h)
         acos_h_deg = rads_as_degrees(acos_h)
 
@@ -198,10 +199,11 @@ module Celestial
         minute = (".#{m}".to_f * 60.0)
         second = (".#{minute.to_s.split('.')[1]}".to_f * 60.0)
 
+        hour = put_in_range(hour.to_i, 0, 24, 24)
         minute = minute.truncate
         second = second.truncate
 
-        return DateTime.new(date.year, date.month, date.mday, hour.to_i, minute, second, date.zone)
+        return DateTime.new(date.year, date.month, date.mday, hour, minute, second, date.zone)
       end
   end
 end
