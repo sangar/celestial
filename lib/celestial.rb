@@ -194,7 +194,7 @@ module Celestial
 
       # 9. adjust back to UTC
       def adjust_back_to_utc(lmt, lng_hour)
-        put_in_range(lmt - lng_hour, 0, 24, 24)
+        put_in_range(lmt - lng_hour, 0, 23, 24)
       end
 
       # 10. convert UT value to local time zone of latitude/longitude
@@ -205,7 +205,7 @@ module Celestial
         minute = (".#{m}".to_f * 60.0)
         second = (".#{minute.to_s.split('.')[1]}".to_f * 60.0)
 
-        hour = put_in_range(hour.to_i, 0, 24, 24)
+        hour = put_in_range(hour.to_i, 0, 23, 24)
         minute = minute.truncate
         second = second.truncate
 
