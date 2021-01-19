@@ -27,10 +27,14 @@ module Celestial
         diff = Time.at(duration - y_duration).utc.strftime("+%M:%S")
       end
 
+      mspn = midnight_sun_polar_night(date, latitude, longitude, :sunrise, 90.8333)
+
       {
         sunrise: sunrise,
         sunset: sunset,
         length: Time.at(duration).utc.strftime("%T"),
+        midnight_sun: mspn.eql?(:midnight_sun),
+        polar_night: mspn.eql?(:polar_night),
         difference: diff,
         noon: Time.at(noon).to_datetime,
         civil: {
@@ -64,6 +68,26 @@ module Celestial
         utc_time         = adjust_back_to_utc(lmt, lng_hour)
         result           = convert_utc_time_to_local_time_zone_of_lat_lng(date, utc_time)
         result
+      end
+
+      def midnight_sun_polar_night(date, latitude, longitude, sunrise, zenith)
+        doy              = day_of_the_year(date)
+        lng_hour, t      = convert_lng_to_hour_value(longitude, doy, sunrise)
+        m                = calculate_suns_mean_anomaly(t)
+        l                = calculate_suns_true_longitude(m)
+        ra               = calculate_suns_right_ascension(l)
+        ra               = right_ascension_value_needs_to_be_in_same_quadrant(l, ra)
+        ra               = right_ascension_value_needs_to_be_converted_into_hours(ra)
+        sin_dec, cos_dec = calculate_the_suns_declination(l)
+        cos_h            = calculate_the_suns_local_hour_angle(zenith, latitude, sin_dec, cos_dec)
+
+        if (cos_h >=  1.0)
+          :polar_night
+        elsif (cos_h <= -1.0)
+          :midnight_sun
+        else
+          :none
+        end
       end
 
       #
@@ -160,11 +184,13 @@ module Celestial
         bottom = cos_dec * Math.cos(lat_rag)
         cos_h = top / bottom
 
-        if (cos_h >  1)
+        if (cos_h >  1.0)
           # the sun never rises on this location (on the specified date)
+          return 1.0
         end
-        if (cos_h < -1)
+        if (cos_h < -1.0)
           # the sun never sets on this location (on the specified date)
+          return -1.0
         end
 
         cos_h
@@ -172,19 +198,18 @@ module Celestial
 
       # 7b. finish calculating H and convert into hours
       def finish_calculating_h_and_convert_into_hours(cos_h, rise_or_set)
-        cos_h = -1 if cos_h < -1
         acos_h = Math.acos(cos_h)
         acos_h_deg = rads_as_degrees(acos_h)
 
         if rise_or_set == :sunrise
-          h = 360 - acos_h_deg
+          h = 360.0 - acos_h_deg
         end
 
         if rise_or_set == :sunset
           h = acos_h_deg
         end
 
-        h / 15
+        h / 15.0
       end
 
       # 8. calculate local mean time of rising/setting
@@ -197,7 +222,7 @@ module Celestial
         put_in_range(lmt - lng_hour, 0, 23, 24)
       end
 
-      # 10. convert UT value to local time zone of latitude/longitude
+      # 10. convert UTC value to local time zone of latitude/longitude
       def convert_utc_time_to_local_time_zone_of_lat_lng(date, utc_time)
         time = utc_time + date.zone.to_i
 
