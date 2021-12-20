@@ -1,5 +1,6 @@
 require "celestial/version"
 require "celestial/sun"
+require "celestial/moon"
 require "date"
 
 module Celestial
@@ -30,6 +31,8 @@ module Celestial
 
       mspn = Sun.midnight_sun_polar_night(date, latitude, longitude, :sunrise, 90.8333)
 
+      moon_data = Moon.for(options)
+
       {
         sunrise: sunrise,
         sunset: sunset,
@@ -49,7 +52,8 @@ module Celestial
         astronomical: {
           sunrise: Sun.calculate(date, latitude, longitude, :sunrise, 108),
           sunset: Sun.calculate(date, latitude, longitude, :sunset, 108)
-        }
+        },
+        moon: moon_data
       }
     end
   end
