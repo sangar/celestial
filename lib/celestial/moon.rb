@@ -4,16 +4,16 @@ module Celestial
       def for(options)
         options = { date: DateTime.now }.merge(options)
 
-        moon_data = calculate(options[:date])
-        phase_text = phase_text(moon_data)
+        lunation = calculate(options[:date])
+        phase_text = phase_text(lunation)
         phase_text_format = phase_text.split("_").each {|word| word.capitalize! }.join(" ")
 
-        curve = Math.sin(moon_data * Math::PI)
+        curve = Math.sin(lunation * Math::PI)
         percent = (curve * 100).round(1)
 
         {
           datetime: options[:date],
-          moon_data: moon_data,
+          lunation: lunation,
           phase: phase_text,
           phase_text: phase_text_format,
           curve: curve,
@@ -30,8 +30,8 @@ module Celestial
             new_time = time + (i * 24 * 3600) + (j * 3600)
             new_date = DateTime.parse(new_time.to_s)
 
-            moon_day = calculate(new_date).round(5)
-            curve = Math.sin(moon_day * Math::PI)
+            lunation = calculate(new_date).round(5)
+            curve = Math.sin(lunation * Math::PI)
             percent = (curve * 100).round(2)
 
             if percent == 100.0
