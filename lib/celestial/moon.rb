@@ -25,6 +25,7 @@ module Celestial
       def next_full(date)
         time = date.to_time
 
+        dates = []
         30.times do |i|
           24.times do |j|
             new_time = time + (i * 24 * 3600) + (j * 3600)
@@ -34,11 +35,13 @@ module Celestial
             curve = Math.sin(lunation * Math::PI)
             percent = (curve * 100).round(2)
 
-            if percent == 100.0
-              return new_date
+            if percent > 99.9
+              dates << new_date.to_time.to_f
             end
           end
         end
+
+        DateTime.parse(Time.at(dates.sum / dates.count).to_s)
       end
 
       def get_frac(fr)
