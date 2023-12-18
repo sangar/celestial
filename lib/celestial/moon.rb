@@ -8,7 +8,7 @@ module Celestial
         phase_text = phase_text(lunation)
         phase_text_format = phase_text.split("_").each {|word| word.capitalize! }.join(" ")
 
-        curve = Math.sin(lunation * Math::PI)
+        curve = calculate_curve(lunation)
         percent = (curve * 100).round(1)
 
         {
@@ -22,6 +22,12 @@ module Celestial
         }
       end
 
+      def calculate_curve(lunation)
+        size = 1.0
+        y = Math.sin(((lunation-(size/4.0))/(0.002760416667 * size)) * Math::PI/180)
+        1.0 - ((size/2.0) - y * (size/2.0))
+      end
+
       def next_full(date)
         time = date.to_time
 
@@ -32,7 +38,7 @@ module Celestial
             new_date = DateTime.parse(new_time.to_s)
 
             lunation = calculate(new_date).round(5)
-            curve = Math.sin(lunation * Math::PI)
+            curve = calculate_curve(lunation)
             percent = (curve * 100).round(2)
 
             if percent > 99.9

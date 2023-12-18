@@ -19,8 +19,8 @@ class CelestialTest < Minitest::Test
     assert_equal false, data[:polar_night]
 
     moon = data[:moon]
-    assert_equal 0.638736759243707, moon[:curve]
-    assert_equal 63.9, moon[:percent]
+    assert_equal 0.40741262058781313, moon[:curve]
+    assert_equal 40.7, moon[:percent]
     assert_equal "first_quarter", moon[:phase]
     assert_equal "First Quarter", moon[:phase_text]
   end
